@@ -1,2 +1,1 @@
-# gerenciamentoconteudo
-Sistema de Gerenciamento de conteúdo
+# Sistema de Gerenciamento de conteúdo
