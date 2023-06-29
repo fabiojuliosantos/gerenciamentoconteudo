@@ -7,6 +7,7 @@ from .serializers import ArticleSerializer
 # Create your views here.
 
 class ArticleView(CreateAPIView):
+    
     serializer_class = ArticleSerializer
 
     def post(self, request, *args, **kwargs):
