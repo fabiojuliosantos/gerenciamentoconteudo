@@ -16,12 +16,11 @@ class Tag(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=90, blank=False)
-    text = models.CharField(max_length=500, blank=False)
+    text = models.TextField(blank=False)
     created_at = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated_at = models.DateTimeField(auto_now=True)
     liked_by = models.ManyToManyField(User, related_name='liked_articles')
     tags = models.ManyToManyField(Tag, related_name='article_tags')
-    categories = models.ManyToManyField(Category, related_name='artice_categories', blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
 
     def __str__(self):

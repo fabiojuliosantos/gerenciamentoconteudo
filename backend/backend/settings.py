@@ -124,5 +124,15 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Modelo de Usuário Padrão
+AUTH_USER_MODEL = 'users.User'
+
 # Sending E-mails in the application
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp-mail.outlook.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "fabiojulio.dev@outlook.com"
+EMAIL_HOST_PASSWORD = "F4b10#722!"
+EMAIL_USE_TLS = True
+EMAIL_FAIL_SILENT = False
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
