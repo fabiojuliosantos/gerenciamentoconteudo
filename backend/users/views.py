@@ -63,6 +63,7 @@ class LoginUserView(TokenObtainPairView):
 
 class RedefinePasswordView(APIView):
     permission_classes = (IsAuthenticated, )
+
     def post(self, request):
         email = request.data.get('email')
 
@@ -92,6 +93,14 @@ class RedefinePasswordView(APIView):
         return Response(response_data)
 
 class UpdateUserView(APIView):
+    def get_object(self,user_id):
+        
+        try:
+            return User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return None
+    
+    permission_classes = (IsAuthenticated, )
 
     def put(self, request, user_id, *args, **kwargs):
         user_instance = self.get_object(user_id)
