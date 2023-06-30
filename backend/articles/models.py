@@ -9,10 +9,10 @@ class Category(models.Model):
         return self.name
 
 class Tag(models.Model):
-    name = models.CharField(max_length=30, blank=False)
+    tag_name = models.CharField(max_length=30, blank=False)
     
     def __str__(self):
-        return self.name
+        return self.tag_name
 
 class Article(models.Model):
     title = models.CharField(max_length=90, blank=False)
@@ -20,12 +20,24 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated_at = models.DateTimeField(auto_now=True)
     liked_by = models.ManyToManyField(User, related_name='liked_articles')
-    tags = models.ManyToManyField(Tag, related_name='article_tags')
+    #tags = models.ManyToManyField(Tag, related_name='article_tags')
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
 
     def __str__(self):
         return self.title
+    
+    """ def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
+        if self.tags:
+            tag_names = [tag.strip() for tag in self.tags.split(",") if tag.strip()]
+            tags = []
+            for tag_name in tag_names:
+                tag, _ = Tag.objects.get_or_create(tag_name=tag_name)
+                tags.append(tag)
+            
+            self.tags.set(tags)
+ """
 class Reply(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, blank=False)
     text = models.CharField(max_length=500, blank=False)

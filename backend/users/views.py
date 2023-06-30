@@ -2,15 +2,19 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.views import Response
 from rest_framework.generics import CreateAPIView
+from rest_framework.views import APIView
 from .serializers import UserSerializer
 from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
+import string, random
 from rest_framework_simplejwt.views import TokenObtainPairView
 # Create your views here.
 
 User = get_user_model()
 
-class RegisterUser(CreateAPIView):
+class RegisterUserView(CreateAPIView):
     serializer_class = UserSerializer
     
     def post(self, request, *args, **kwargs):
@@ -35,7 +39,7 @@ class RegisterUser(CreateAPIView):
 
         return Response(response_data, status=status.HTTP_201_CREATED)
     
-class LoginUser(TokenObtainPairView):
+class LoginUserView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -55,3 +59,38 @@ class LoginUser(TokenObtainPairView):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+class RedefinePasswordView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+
+        try:
+            user = User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            return Response({'error:' ' E-mail não encontrado no banco.'}, status=404)
+        
+        user_name = user.name
+        password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+        user.password = make_password(password)
+        user.save()
+
+        subject = 'Redefinição da senha do Sistema de Gerenciamento de Conteúdo'
+        message = f'Olá, {user_name}. Você solicitou a redefinição de sua senha, sua nova senha é: {password}, utilize-a para logar com seu username no sistema.'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [email]
+        send_mail(subject, message, from_email, recipient_list)
+
+        response_data = {
+            'success': 'Senha redefinida',
+            'message': 'A nova senha foi enviada via e-mail.'
+        }
+
+        return Response(response_data)
+
+class UpdateUserView(APIView):
+
+    def put(self, request, user_id, *args, **kwargs):
+        user_instance = self.get_object(user_id)
+        if not user_instance:
+            return Response({"res": f"Usuário com id={user_id} não existe"}, status=status.HTTP_400_BAD_REQUEST)
